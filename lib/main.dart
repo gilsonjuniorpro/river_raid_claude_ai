@@ -583,8 +583,15 @@ class GameScreenState extends State<GameScreen> {
                   width: player.size.width,
                   height: player.size.height,
                   decoration: BoxDecoration(
-                    color: Colors.blue,
+                    //color: Colors.blue,
                     borderRadius: BorderRadius.circular(5),
+                  ),
+                  child: const Center(
+                    child: Icon(
+                      Icons.flight,
+                      color: Colors.white,
+                      size: 40,
+                    ),
                   ),
                 ),
               ),
