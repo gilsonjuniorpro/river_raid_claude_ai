@@ -23,8 +23,12 @@ samples, guidance on mobile development, and a full API reference.
         </td>
     </tr>
     <tr>
-        <td colspan="2">
-          https://github.com/user-attachments/assets/7909f5fd-02ad-4861-be91-2bdc2a5938bf
+        <td colspan="2" align="center">
+            <a href="https://github.com/user-attachments/assets/7909f5fd-02ad-4861-be91-2bdc2a5938bf">
+                <img src="https://github.com/user-attachments/assets/7909f5fd-02ad-4861-be91-2bdc2a5938bf" alt="Video Preview (Click to View)" width="500">
+            </a>
+            <br>
+            <em>Click the preview above to watch the video</em>
         </td>
     </tr>
     <tr>
