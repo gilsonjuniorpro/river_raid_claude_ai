@@ -19,7 +19,7 @@ samples, guidance on mobile development, and a full API reference.
 <table style="width:100%; table-layout:fixed;">
     <tr>
         <td colspan="2" align="center">
-          WEB
+          <strong>WEB</strong>
         </td>
     </tr>
 </table>
