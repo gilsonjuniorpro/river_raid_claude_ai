@@ -24,10 +24,11 @@ samples, guidance on mobile development, and a full API reference.
     </tr>
     <tr>
         <td colspan="2" align="center">
-            <video width="500" controls>
-                <source src="https://github.com/user-attachments/assets/7909f5fd-02ad-4861-be91-2bdc2a5938bf" type="video/mp4">
-                Your browser does not support the video tag.
-            </video>
+            
+
+https://github.com/user-attachments/assets/f5adf142-a89f-4862-b146-8756eb566d66
+
+
         </td>
     </tr>
     <tr>
