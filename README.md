@@ -16,8 +16,8 @@ For help getting started with Flutter development, view the
 samples, guidance on mobile development, and a full API reference.
 
 
-<table width="100%">
-    <tr>
+<table>
+    <tr width="100%">
         <td colspan="2">
           WEB
         </td>
