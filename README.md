@@ -22,14 +22,11 @@ samples, guidance on mobile development, and a full API reference.
           WEB
         </td>
     </tr>
-    <tr>
-        <td colspan="2" align="center">
-            
+</table>
 
 https://github.com/user-attachments/assets/f5adf142-a89f-4862-b146-8756eb566d66
 
-
-        </td>
+<table>
     </tr>
     <tr>
         <td>
