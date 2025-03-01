@@ -165,18 +165,14 @@ class GameScreenState extends State<GameScreen> {
     const sectionHeight = 200.0;
     final sectionsNeeded = (screenHeight / sectionHeight).ceil() + 2;
 
-    double lastRiverPosition = screenWidth / 2;
-    double riverWidth = screenWidth * 0.6;
+    // Fixed river position in the center
+    final riverWidth = screenWidth * 0.6;
+    final riverLeft = (screenWidth - riverWidth) / 2;
 
     for (int i = 0; i < sectionsNeeded; i++) {
-      // Create a new river section with slight meandering
-      final newLeft = max(20.0, min(screenWidth - riverWidth - 20,
-          lastRiverPosition + random.nextDouble() * 40 - 20));
-      lastRiverPosition = newLeft + riverWidth / 2;
-
       terrainSections.add(TerrainSection(
         top: -sectionHeight * i,
-        left: newLeft,
+        left: riverLeft,
         riverWidth: riverWidth,
         sectionHeight: sectionHeight,
         screenWidth: screenWidth,
@@ -188,7 +184,7 @@ class GameScreenState extends State<GameScreen> {
         final enemyCount = 1 + random.nextInt(3);
 
         for (int j = 0; j < enemyCount; j++) {
-          final enemyX = newLeft + riverWidth * random.nextDouble() * 0.8 + riverWidth * 0.1;
+          final enemyX = riverLeft + riverWidth * random.nextDouble() * 0.8 + riverWidth * 0.1;
           final enemyY = -sectionHeight * i + random.nextDouble() * sectionHeight * 0.8;
 
           final enemyType = random.nextInt(3); // 0 = boat, 1 = helicopter, 2 = jet
@@ -206,7 +202,7 @@ class GameScreenState extends State<GameScreen> {
       if (i > 0) {
         // Always add a fuel tank in the second section to ensure the player sees one
         if (i == 1 || random.nextDouble() < 0.7) {
-          final fuelX = newLeft + riverWidth * random.nextDouble() * 0.8 + riverWidth * 0.1;
+          final fuelX = riverLeft + riverWidth * random.nextDouble() * 0.8 + riverWidth * 0.1;
           final fuelY = -sectionHeight * i + random.nextDouble() * sectionHeight * 0.8;
 
           fuelTanks.add(Fuel(
@@ -481,6 +477,12 @@ class GameScreenState extends State<GameScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    // Optional: cap game width to 600 for a more "phone-like" width on tablets
+    final gameWidth = screenWidth.clamp(300.0, 600.0); // Adjust 600 to your preference
+
     return Scaffold(
       backgroundColor: Colors.black,
       body: RawKeyboardListener(
@@ -503,290 +505,195 @@ class GameScreenState extends State<GameScreen> {
             }
           }
         },
-        child: GestureDetector(
-          onHorizontalDragUpdate: (details) {
-            if (!gamePaused && !gameOver) {
-              movePlayer(details.delta.dx / 10);
-            }
-          },
-          onTap: () {
-            if (!gamePaused && !gameOver) {
-              fireBullet();
-            }
-          },
-          child: Stack(
-            children: [
-              // Draw terrain
-              CustomPaint(
-                size: Size(MediaQuery.of(context).size.width, MediaQuery.of(context).size.height),
-                painter: TerrainPainter(terrainSections),
-              ),
+        child: Center(
+          child: SizedBox(
+            width: gameWidth,
+            height: screenHeight,
+            child: GestureDetector(
+              onHorizontalDragUpdate: (details) {
+                if (!gamePaused && !gameOver) {
+                  movePlayer(details.delta.dx / 10);
+                }
+              },
+              onTap: () {
+                if (!gamePaused && !gameOver) {
+                  fireBullet();
+                }
+              },
+              child: Stack(
+                children: [
+                  CustomPaint(
+                    size: Size(gameWidth, screenHeight),
+                    painter: TerrainPainter(terrainSections),
+                  ),
 
-              // Draw game objects
-              ...terrainSections.map((section) => section.build()),
-
-              // Draw enemies
-              ...enemies.map((enemy) => Positioned(
-                left: enemy.position.dx - enemy.size.width / 2,
-                top: enemy.position.dy - enemy.size.height / 2,
-                child: enemy.build(),
-              )),
-
-              // Draw fuel tanks
-              ...fuelTanks.map((fuel) => Positioned(
-                left: fuel.position.dx - fuel.size.width / 2,
-                top: fuel.position.dy - fuel.size.height / 2,
-                child: fuel.build(),
-              )),
-
-              // Draw bullets
-              ...bullets.map((bullet) => Positioned(
-                left: bullet.position.dx - bullet.size.width / 2,
-                top: bullet.position.dy - bullet.size.height / 2,
-                child: Container(
-                  width: bullet.size.width,
-                  height: bullet.size.height,
-                  color: Colors.yellow,
-                ),
-              )),
-
-              // Draw explosions
-              ...explosions.map((explosion) => Positioned(
-                left: explosion.position.dx - explosion.size.width / 2,
-                top: explosion.position.dy - explosion.size.height / 2,
-                child: AnimatedOpacity(
-                  opacity: explosion.opacity,
-                  duration: const Duration(milliseconds: 100),
-                  child: Container(
-                    width: explosion.size.width,
-                    height: explosion.size.height,
-                    decoration: BoxDecoration(
-                      color: Colors.orange,
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.red.withOpacity(0.8),
-                          blurRadius: 10,
-                          spreadRadius: 5,
-                        ),
-                      ],
+                  // Game objects - enemies, player, bullets, etc.
+                  ...enemies.map((enemy) => Positioned(
+                    left: enemy.position.dx - enemy.size.width / 2,
+                    top: enemy.position.dy - enemy.size.height / 2,
+                    child: enemy.build(),
+                  )),
+                  ...fuelTanks.map((fuel) => Positioned(
+                    left: fuel.position.dx - fuel.size.width / 2,
+                    top: fuel.position.dy - fuel.size.height / 2,
+                    child: fuel.build(),
+                  )),
+                  ...bullets.map((bullet) => Positioned(
+                    left: bullet.position.dx - bullet.size.width / 2,
+                    top: bullet.position.dy - bullet.size.height / 2,
+                    child: Container(
+                      width: bullet.size.width,
+                      height: bullet.size.height,
+                      color: Colors.yellow,
                     ),
-                  ),
-                ),
-              )),
-
-              // Draw player
-              Positioned(
-                left: player.position.dx - player.size.width / 2,
-                top: player.position.dy - player.size.height / 2,
-                child: Container(
-                  width: player.size.width,
-                  height: player.size.height,
-                  decoration: BoxDecoration(
-                    //color: Colors.blue,
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                  child: const Center(
-                    child: Icon(
-                      Icons.flight,
-                      color: Colors.white,
-                      size: 40,
-                    ),
-                  ),
-                ),
-              ),
-
-              // Game UI
-              Positioned(
-                top: 40,
-                left: 20,
-                child: Text(
-                  'Score: $score',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-
-              Positioned(
-                top: 40,
-                right: 20,
-                child: Row(
-                  children: List.generate(
-                    lives,
-                        (index) => const Icon(Icons.favorite, color: Colors.red, size: 30),
-                  ),
-                ),
-              ),
-
-              // Fuel gauge
-              Positioned(
-                bottom: 20,
-                left: 20,
-                child: Container(
-                  width: 200,
-                  height: 20,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.white),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Stack(
-                    children: [
-                      Container(
-                        width: 200 * (fuel / 100),
-                        decoration: BoxDecoration(
-                          color: fuel > 30 ? Colors.green : Colors.red,
-                          borderRadius: BorderRadius.circular(9),
-                        ),
-                      ),
-                      const Center(
-                        child: Text(
-                          'FUEL',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-              // Controls
-              Positioned(
-                bottom: 20,
-                right: 20,
-                child: Row(
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          gamePaused = !gamePaused;
-                        });
-                      },
+                  )),
+                  ...explosions.map((explosion) => Positioned(
+                    left: explosion.position.dx - explosion.size.width / 2,
+                    top: explosion.position.dy - explosion.size.height / 2,
+                    child: AnimatedOpacity(
+                      opacity: explosion.opacity,
+                      duration: const Duration(milliseconds: 100),
                       child: Container(
-                        padding: const EdgeInsets.all(10),
+                        width: explosion.size.width,
+                        height: explosion.size.height,
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.3),
+                          color: Colors.orange,
                           shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.red.withOpacity(0.8),
+                              blurRadius: 10,
+                              spreadRadius: 5,
+                            ),
+                          ],
                         ),
+                      ),
+                    ),
+                  )),
+
+                  // Player
+                  Positioned(
+                    left: player.position.dx - player.size.width / 2,
+                    top: player.position.dy - player.size.height / 2,
+                    child: Container(
+                      width: player.size.width,
+                      height: player.size.height,
+                      child: const Center(
                         child: Icon(
-                          gamePaused ? Icons.play_arrow : Icons.pause,
+                          Icons.flight,
                           color: Colors.white,
-                          size: 30,
+                          size: 40,
                         ),
                       ),
                     ),
-                    const SizedBox(width: 10),
-                    GestureDetector(
-                      onTap: fireBullet,
-                      child: Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.3),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.flash_on,
-                          color: Colors.white,
-                          size: 30,
-                        ),
+                  ),
+
+                  // UI elements (score, lives, fuel, etc.)
+                  Positioned(
+                    top: 40,
+                    left: 20,
+                    child: Text(
+                      'Score: $score',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                  ],
-                ),
-              ),
-
-              // Keyboard controls info
-              Positioned(
-                bottom: 20,
-                left: 230,
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.7),
-                    borderRadius: BorderRadius.circular(5),
                   ),
-                  child: const Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Controls:', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                      SizedBox(height: 4),
-                      Text('← → : Move', style: TextStyle(color: Colors.white)),
-                      Text('SPACE : Fire', style: TextStyle(color: Colors.white)),
-                      Text('P : Pause', style: TextStyle(color: Colors.white)),
-                    ],
+                  Positioned(
+                    top: 40,
+                    right: 20,
+                    child: Row(
+                      children: List.generate(
+                        lives,
+                            (index) => const Icon(Icons.favorite, color: Colors.red, size: 30),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-
-              // Game over overlay
-              if (gameOver)
-                Container(
-                  color: Colors.black.withOpacity(0.8),
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text(
-                          'GAME OVER',
-                          style: TextStyle(
-                            color: Colors.red,
-                            fontSize: 50,
-                            fontWeight: FontWeight.bold,
+                  Positioned(
+                    bottom: 20,
+                    left: 20,
+                    child: Container(
+                      width: 200,
+                      height: 20,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.white),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Stack(
+                        children: [
+                          Container(
+                            width: 200 * (fuel / 100),
+                            decoration: BoxDecoration(
+                              color: fuel > 30 ? Colors.green : Colors.red,
+                              borderRadius: BorderRadius.circular(9),
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 20),
-                        Text(
-                          'Score: $score',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 30,
-                          ),
-                        ),
-                        const SizedBox(height: 40),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue,
-                            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                          ),
-                          onPressed: resetGame,
-                          child: const Text(
-                            'PLAY AGAIN',
-                            style: TextStyle(fontSize: 24),
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red,
-                            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                          ),
-                          onPressed: () {
-                            Navigator.of(context).pushReplacement(
-                              MaterialPageRoute(
-                                builder: (context) => const MainMenu(),
+                          const Center(
+                            child: Text(
+                              'FUEL',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
                               ),
-                            );
-                          },
-                          child: const Text(
-                            'MAIN MENU',
-                            style: TextStyle(fontSize: 24),
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                ),
-            ],
+
+                  if (gameOver)
+                    Container(
+                      color: Colors.black.withOpacity(0.8),
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text(
+                              'GAME OVER',
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontSize: 50,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            Text(
+                              'Score: $score',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 30,
+                              ),
+                            ),
+                            const SizedBox(height: 40),
+                            ElevatedButton(
+                              onPressed: resetGame,
+                              child: const Text('PLAY AGAIN', style: TextStyle(fontSize: 24)),
+                            ),
+                            const SizedBox(height: 20),
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(builder: (context) => const MainMenu()),
+                                );
+                              },
+                              child: const Text('MAIN MENU', style: TextStyle(fontSize: 24)),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
           ),
         ),
       ),
     );
   }
+
 }
 
 // Game objects

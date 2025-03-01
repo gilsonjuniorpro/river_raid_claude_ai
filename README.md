@@ -15,18 +15,33 @@ For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
 
-https://github.com/user-attachments/assets/7909f5fd-02ad-4861-be91-2bdc2a5938bf
-
-
 
 <table>
-  <tr>
-    <td>
-      <img src="https://github.com/user-attachments/assets/6563ebdd-82c5-42da-950c-782d15af8370" alt="iPhone Screenshot" width="300">
-    </td>
-    <td>
-      <img src="https://github.com/user-attachments/assets/b2e7bf31-9f86-425f-8629-9c9343e8e033" alt="Android Screenshot" width="300">
-    </td>
-  </tr>
+    <tr>
+        <td colspan="2">
+          WEB
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+          https://github.com/user-attachments/assets/7909f5fd-02ad-4861-be91-2bdc2a5938bf
+        </td>
+    </tr>
+    <tr>
+        <td>
+          Android
+        </td>
+        <td>
+          iPhone
+        </td>
+    </tr>
+    <tr>
+        <td>
+          <img src="https://github.com/user-attachments/assets/6563ebdd-82c5-42da-950c-782d15af8370" alt="iPhone Screenshot" width="300">
+        </td>
+        <td>
+          <img src="https://github.com/user-attachments/assets/b2e7bf31-9f86-425f-8629-9c9343e8e033" alt="Android Screenshot" width="300">
+        </td>
+    </tr>
 </table>
 
