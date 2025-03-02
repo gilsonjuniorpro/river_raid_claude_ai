@@ -1,4 +1,4 @@
-# river_raid_claude_ai
+# River Raid - Atari Classic Game
 
 A new Flutter project.
 
